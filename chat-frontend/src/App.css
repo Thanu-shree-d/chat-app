@@ -1,38 +1,130 @@
-.App {
-  text-align: center;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #ece5dd;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Layout */
+.app {
+  display: flex;
+  height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* Sidebar */
+.sidebar {
+  width: 25%;
+  background: #075e54;
+  color: white;
+  padding: 15px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.sidebar h3 {
+  margin-bottom: 20px;
+}
+
+.online p {
+  margin: 5px 0;
+}
+
+/* Chat section */
+.chat-section {
+  width: 75%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+/* Header */
+.chat-header {
+  background: #128c7e;
   color: white;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.App-link {
-  color: #61dafb;
+.chat-header input {
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.chat-header button {
+  padding: 5px 10px;
+  background: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Chat box */
+.chat-box {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background: url("https://i.imgur.com/8Km9tLL.png");
+}
+
+/* Messages */
+.message {
+  display: flex;
+  margin: 5px 0;
+}
+
+.my-msg {
+  justify-content: flex-end;
+}
+
+/* Bubble */
+.bubble {
+  max-width: 60%;
+  padding: 10px;
+  border-radius: 10px;
+  background: white;
+  position: relative;
+}
+
+.my-msg .bubble {
+  background: #dcf8c6;
+}
+
+/* Text */
+.sender {
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.bubble p {
+  margin: 5px 0;
+}
+
+.bubble small {
+  font-size: 10px;
+  float: right;
+}
+
+/* Input */
+.input-box {
+  display: flex;
+  padding: 10px;
+  background: #f0f0f0;
+}
+
+.input-box input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+}
+
+.input-box button {
+  margin-left: 10px;
+  padding: 10px 15px;
+  border-radius: 50%;
+  border: none;
+  background: #128c7e;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
 }

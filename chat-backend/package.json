@@ -6,7 +6,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "react-scripts start"
-
   },
   "keywords": [],
   "author": "",
@@ -16,6 +15,7 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "mongoose": "^9.5.0",
+    "multer": "^2.1.1",
     "socket.io": "^4.8.3"
   }
 }

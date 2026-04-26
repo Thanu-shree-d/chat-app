@@ -1,130 +1,72 @@
 import React, { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import io from "socket.io-client";
 import axios from "axios";
 
 const socket = io("http://localhost:5000");
-const API = "http://localhost:5000";
 
-export default function App() {
-  const [myId, setMyId] = useState("user1");
-  const [otherId, setOtherId] = useState("user2");
-  const [message, setMessage] = useState("");
+function App() {
+  const [name, setName] = useState("");
+  const [msg, setMsg] = useState("");
   const [messages, setMessages] = useState([]);
-  const [onlineUsers, setOnlineUsers] = useState({});
-  const [typing, setTyping] = useState(false);
-  const [file, setFile] = useState(null);
+  const [online, setOnline] = useState([]);
 
   useEffect(() => {
-    socket.emit("userOnline", myId);
+    axios.get("http://localhost:5000/messages")
+      .then(res => setMessages(res.data));
+
+    socket.on("receiveMessage", (data) => {
+      setMessages(prev => [...prev, data]);
+    });
 
     socket.on("onlineUsers", (users) => {
-      setOnlineUsers(users);
+      setOnline(users);
     });
-
-    socket.on("receiveMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
-    });
-
-    socket.on("typing", () => {
-      setTyping(true);
-      setTimeout(() => setTyping(false), 2000);
-    });
-
-    socket.on("messageSeenUpdate", (id) => {
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg._id === id ? { ...msg, status: "seen" } : msg
-        )
-      );
-    });
-
-    fetchMessages();
   }, []);
 
-  const fetchMessages = async () => {
-    const res = await axios.get(
-      `${API}/api/messages/${myId}/${otherId}`
-    );
-    setMessages(res.data);
+  const join = () => {
+    socket.emit("join", name);
   };
 
-  const sendMessage = async () => {
-    let mediaUrl = "";
+  const send = () => {
+    const data = {
+      text: msg,
+      sender: name,
+      time: new Date().toLocaleTimeString()
+    };
 
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const uploadRes = await axios.post(
-        `${API}/api/upload`,
-        formData
-      );
-      mediaUrl = uploadRes.data.filePath;
-    }
-
-    socket.emit("sendMessage", {
-      sender: myId,
-      receiver: otherId,
-      text: message,
-      media: mediaUrl
-    });
-
-    setMessage("");
-    setFile(null);
-  };
-
-  const handleTyping = () => {
-    socket.emit("typing", { sender: myId, receiver: otherId });
-  };
-
-  const markSeen = (id) => {
-    socket.emit("messageSeen", id);
+    socket.emit("sendMessage", data);
+    setMsg("");
   };
 
   return (
     <div style={{ padding: 20 }}>
-      <h2>Chat App</h2>
+      <h2>💬 Chat App</h2>
 
-      <p>
-        Status: {onlineUsers[otherId] ? "🟢 Online" : "🔴 Offline"}
-      </p>
+      <input
+        placeholder="Enter name"
+        onChange={(e) => setName(e.target.value)}
+      />
+      <button onClick={join}>Join</button>
 
-      <div style={{ border: "1px solid black", height: 300, overflowY: "scroll" }}>
-        {messages.map((msg) => (
-          <div key={msg._id} onClick={() => markSeen(msg._id)}>
-            <p>
-              <b>{msg.sender}:</b> {msg.text}
-            </p>
+      <h4>🟢 Online Users: {online.join(", ")}</h4>
 
-            {msg.media && (
-              msg.media.includes(".mp4") ? (
-                <video src={msg.media} width="200" controls />
-              ) : (
-                <img src={msg.media} width="200" alt="media" />
-              )
-            )}
-
-            <small>
-              {new Date(msg.createdAt).toLocaleTimeString()} | {msg.status}
-            </small>
+      <div style={{ height: 300, overflow: "auto", border: "1px solid gray", padding: 10 }}>
+        {messages.map((m, i) => (
+          <div key={i}>
+            <b>{m.sender}</b>: {m.text}
+            <small> ({m.time})</small>
           </div>
         ))}
       </div>
 
-      {typing && <p>Typing...</p>}
-
       <input
-        value={message}
-        onChange={(e) => {
-          setMessage(e.target.value);
-          handleTyping();
-        }}
+        value={msg}
+        onChange={(e) => setMsg(e.target.value)}
         placeholder="Type message"
       />
-
-      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-
-      <button onClick={sendMessage}>Send</button>
+      <button onClick={send}>Send</button>
     </div>
   );
 }
+
+export default App;
